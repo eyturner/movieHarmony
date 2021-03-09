@@ -11,7 +11,7 @@ const Choose = ({ location }) => {
   const socket = useContext(SocketContext)
 
   useEffect(() => {
-    const {name, room} = queryString.parse(location.search)
+    const { name, room } = queryString.parse(location.search)
 
     socket.emit('join', { name, room }, () => console.log(`${name} has joined ${room}`))
     socket.emit('send_movie_data')

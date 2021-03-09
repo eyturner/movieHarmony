@@ -23,7 +23,7 @@ const Movies = ({ movies }) => {
     <div className={classes.root}>
       {
         movies.map(movie => (
-          <div key={movie.title}>
+          <div key={movie.id}>
             <TinderCard onSwipe={(direction) => handleSwipe(direction, movie, socket)}>
               <Movie movie={movie} />
             </TinderCard>

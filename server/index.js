@@ -7,11 +7,11 @@ const cors = require('cors')
 const axios = require('axios').default
 
 const { addUser, removeUser, getUser } = require('./users.js')
-const { addRoom, getRoomGenres, roomHasData, getRoomData, addRoomData, addMovie, updateTopMovies } = require('./room.js')
-const { createGenreString } = require('./helpers')
+const { addRoom, roomHasData, getRoomData, addRoomData, addMovie, updateTopMovies, getRoomSearchData } = require('./room.js')
+const { createSearchString } = require('./helpers')
 
 const PORT = 5000 || process.env.PORT
-const TMDB_BASE_URL = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.TMDB_API_KEY}&with_genres=`
+const TMDB_BASE_URL = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.TMDB_API_KEY}`
 
 const app = express()
 app.use(cors())
@@ -35,17 +35,21 @@ io.on('connection', (socket) => {
     callback();
   })
 
-  socket.on('create_room', (genres, room, callback) => {
-    addRoom(room, genres)
+  socket.on('create_room', (roomData, room, callback) => {
+    addRoom(room, roomData)
     callback()
   })
 
   socket.on('send_movie_data', async () => {
     const user = getUser(socket.id)
+    console.log("USER:", user)
     if (roomHasData(user.room)) {
       socket.emit('movie_data', getRoomData(user.room))
     } else {
-      const res = await axios.get(TMDB_BASE_URL + createGenreString(getRoomGenres(user)))
+      const searchData = getRoomSearchData(user)
+      console.log("WE'VE GOT SEARCH DATA:", searchData)
+      console.log("SEARCH URL:", TMDB_BASE_URL + createSearchString(searchData.genres, searchData.years, searchData.language))
+      const res = await axios.get(TMDB_BASE_URL + createSearchString(searchData.genres, searchData.years, searchData.language))
       addRoomData(user.room, res.data)
       socket.emit('movie_data', res.data)
     }

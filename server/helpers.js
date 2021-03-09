@@ -1,11 +1,18 @@
 const createGenreString = (genres) => {
-  let genreString = ''
+  let genreString = '&with_genres='
   genres.forEach(genre => [
     genreString += genre + '|'
   ])
   genreString = genreString.slice(0, -1)
-  return genreString + '&vote_average.gte=6.5&vote_count.gte=1000&primary_release_date.gte=1999-01-01&with_original_language=en'
+  return genreString
 }
+
+// yearRange[0] is earliest year, yearRange[1] is most recent year
+const createYearString = (yearRange) => `&primary_release_date.gte=${yearRange[0].toString() + '-01-01' || '1900-01-01'}&primary_release_date.lte=${yearRange[1].toString() + '-01-01' || new Date().getFullYear() + '-01-01'}`
+
+const createLanguageString = (langCode) => `&with_original_language=${langCode}`
+
+const createSearchString = (genres, yearRange, langCode) => createGenreString(genres) + createYearString(yearRange) + createLanguageString(langCode) + '&vote_average.gte=6.5&vote_count.gte=1000'
 
 //following 2 functions taken from: https://dmitripavlutin.com/how-to-compare-objects-in-javascript/
 const isObject = (object) => {
@@ -34,4 +41,4 @@ const deepEqual = (object1, object2) => {
   return true;
 }
 
-module.exports = { createGenreString, deepEqual }
+module.exports = { createSearchString, deepEqual }

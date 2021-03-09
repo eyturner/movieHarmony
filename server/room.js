@@ -4,9 +4,9 @@ const { deepEqual } = require('./helpers')
 const rooms = {}
 const MAX_LENGTH = 5 //max length of topMovies for each room
 
-const addRoom = (roomName, genres) => {
+const addRoom = (roomName, roomData) => {
   rooms[roomName] = {
-    genres: genres,
+    ...roomData,
     possMovies: [],
     topMovies: [],
   }
@@ -21,6 +21,19 @@ const showTopMovies = (topMovies) => {
 const reverseSortMovies = (movie1, movie2) => movie2.score - movie1.score
 
 const getRoomGenres = (user) => rooms[user.room].genres
+
+const getRoomYears = (user) => rooms[user.room].yearRange
+
+const getRoomLanguage = (user) => rooms[user.room].language
+
+const getRoomSearchData = (user) => {
+  console.log("ROOM:", rooms[user.room])
+  return {
+    "genres": getRoomGenres(user),
+    "years": getRoomYears(user),
+    "language": getRoomLanguage(user)
+  }
+}
 
 const getRoom = (roomName) => rooms[roomName]
 
@@ -56,7 +69,7 @@ const updateTopMovies = (roomName) => {
   } else {
     possMovies.forEach(movie => {
       if (movie.score > newTopMovies[MAX_LENGTH - 1].score && !movieInTops(topMovies, movie)) {
-        console.log("ADDING A NEW MOVIE TO THE TOP:", movie);
+        // console.log("ADDING A NEW MOVIE TO THE TOP:", movie);
         newTopMovies.splice(-1, 1, movie)//replace lowest score movie with new one
       }
     })
@@ -83,4 +96,4 @@ const addMovie = (newMovie, score, roomName, groupApproved) => {
   }
 }
 
-module.exports = { addRoom, getRoomGenres, roomHasData, getRoomData, addRoomData, addMovie, updateTopMovies }
+module.exports = { addRoom, roomHasData, getRoomData, addRoomData, addMovie, updateTopMovies, getRoomSearchData }
